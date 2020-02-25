@@ -20,6 +20,7 @@ import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.support.MultiMessage;
+import com.alibaba.dubbo.remoting.exchange.support.header.HeartbeatHandler;
 
 /**
  *
@@ -40,6 +41,9 @@ public class MultiMessageHandler extends AbstractChannelHandlerDelegate {
                 handler.received(channel, obj);
             }
         } else {
+            /**
+             * {@link HeartbeatHandler#received(com.alibaba.dubbo.remoting.Channel, java.lang.Object)}
+             */
             handler.received(channel, message);
         }
     }

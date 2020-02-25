@@ -57,6 +57,9 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
 
     static void handleResponse(Channel channel, Response response) throws RemotingException {
         if (response != null && !response.isHeartbeat()) {
+            /**
+             * {@link DefaultFuture#received(com.alibaba.dubbo.remoting.Channel, com.alibaba.dubbo.remoting.exchange.Response)}
+             */
             DefaultFuture.received(channel, response);
         }
     }
@@ -172,6 +175,9 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
                     }
                 }
             } else if (message instanceof Response) {
+                /**
+                 * Response消息处理
+                 */
                 handleResponse(channel, (Response) message);
             } else if (message instanceof String) {
                 if (isClientSide(channel)) {

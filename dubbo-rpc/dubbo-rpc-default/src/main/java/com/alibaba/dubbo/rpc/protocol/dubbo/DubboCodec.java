@@ -62,6 +62,9 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
         Serialization s = CodecSupport.getSerialization(channel.getUrl(), proto);
         // get request id.
         long id = Bytes.bytes2long(header, 4);
+        /**
+         * 客户端: 解码Response
+         */
         if ((flag & FLAG_REQUEST) == 0) {
             // decode response.
             Response res = new Response(id);
@@ -75,10 +78,19 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                 try {
                     Object data;
                     if (res.isHeartbeat()) {
+                        /**
+                         * 心跳响应
+                         */
                         data = decodeHeartbeatData(channel, deserialize(s, channel.getUrl(), is));
                     } else if (res.isEvent()) {
+                        /**
+                         * 事件响应
+                         */
                         data = decodeEventData(channel, deserialize(s, channel.getUrl(), is));
                     } else {
+                        /**
+                         * 返回数据响应
+                         */
                         DecodeableRpcResult result;
                         if (channel.getUrl().getParameter(
                                 Constants.DECODE_IN_IO_THREAD_KEY,
@@ -106,7 +118,9 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
             }
             return res;
         } else {
-            // decode request.
+            /**
+             * 服务端: 解码Request
+             */
             Request req = new Request(id);
             req.setVersion("2.0.0");
             req.setTwoWay((flag & FLAG_TWOWAY) != 0);

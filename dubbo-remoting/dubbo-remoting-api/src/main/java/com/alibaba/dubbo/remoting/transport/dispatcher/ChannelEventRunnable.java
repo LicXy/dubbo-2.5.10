@@ -20,6 +20,7 @@ import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.ChannelHandler;
+import com.alibaba.dubbo.remoting.transport.DecodeHandler;
 
 public class ChannelEventRunnable implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ChannelEventRunnable.class);
@@ -76,6 +77,9 @@ public class ChannelEventRunnable implements Runnable {
                 break;
             case RECEIVED:
                 try {
+                    /**
+                     * {@link DecodeHandler#received(com.alibaba.dubbo.remoting.Channel, java.lang.Object)}
+                     */
                     handler.received(channel, message);
                 } catch (Exception e) {
                     logger.warn("ChannelEventRunnable handle " + state + " operation error, channel is " + channel

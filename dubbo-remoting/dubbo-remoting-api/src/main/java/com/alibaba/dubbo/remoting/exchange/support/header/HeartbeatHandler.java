@@ -26,6 +26,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.Request;
 import com.alibaba.dubbo.remoting.exchange.Response;
 import com.alibaba.dubbo.remoting.transport.AbstractChannelHandlerDelegate;
+import com.alibaba.dubbo.remoting.transport.dispatcher.all.AllChannelHandler;
 
 public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
 
@@ -58,6 +59,9 @@ public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
 
     public void received(Channel channel, Object message) throws RemotingException {
         setReadTimestamp(channel);
+        /**
+         *  Request && isHeartbeat
+         */
         if (isHeartbeatRequest(message)) {
             Request req = (Request) message;
             if (req.isTwoWay()) {
@@ -75,6 +79,9 @@ public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
             }
             return;
         }
+        /**
+         *  Response && isHeartbeat
+         */
         if (isHeartbeatResponse(message)) {
             if (logger.isDebugEnabled()) {
                 logger.debug(
@@ -85,6 +92,10 @@ public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
             }
             return;
         }
+        /**
+         * 如果不是心跳信息, 则执行调度线程, 进行请求结果调度
+         * {@link AllChannelHandler#received(com.alibaba.dubbo.remoting.Channel, java.lang.Object)}
+         */
         handler.received(channel, message);
     }
 

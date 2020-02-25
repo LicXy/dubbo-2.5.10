@@ -62,7 +62,7 @@ public class DefaultFuture implements ResponseFuture {
     private final Condition done = lock.newCondition();
     private final long start = System.currentTimeMillis();
     private volatile long sent;
-    private volatile Response response;
+    private volatile Response response;  //使用volatile关键字修饰, 保证内存可见性
     private volatile ResponseCallback callback;
 
     public DefaultFuture(Channel channel, Request request, int timeout) {
@@ -94,6 +94,9 @@ public class DefaultFuture implements ResponseFuture {
         try {
             DefaultFuture future = FUTURES.remove(response.getId());
             if (future != null) {
+                /**
+                 * 将response调度给业务线程, 完成请求
+                 */
                 future.doReceived(response);
             } else {
                 logger.warn("The timeout response finally returned at "
@@ -119,6 +122,10 @@ public class DefaultFuture implements ResponseFuture {
             long start = System.currentTimeMillis();
             lock.lock();
             try {
+                /**
+                 * 循环等待调度线程将返回结果赋给response
+                 * 调度线程: {@link DefaultFuture#doReceived(com.alibaba.dubbo.remoting.exchange.Response)}
+                 */
                 while (!isDone()) {
                     done.await(timeout, TimeUnit.MILLISECONDS);
                     if (isDone() || System.currentTimeMillis() - start > timeout) {

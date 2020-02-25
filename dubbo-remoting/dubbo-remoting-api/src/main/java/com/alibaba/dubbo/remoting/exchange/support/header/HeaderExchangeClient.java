@@ -86,6 +86,9 @@ public class HeaderExchangeClient implements ExchangeClient {
     }
 
     public ResponseFuture request(Object request, int timeout) throws RemotingException {
+        /**
+         * {@link HeaderExchangeChannel#request(java.lang.Object, int)}
+         */
         return channel.request(request, timeout);
     }
 

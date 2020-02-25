@@ -25,6 +25,7 @@ import com.alibaba.dubbo.remoting.Decodeable;
 import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.Request;
 import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchangeHandler;
 
 public class DecodeHandler extends AbstractChannelHandlerDelegate {
 
@@ -46,7 +47,9 @@ public class DecodeHandler extends AbstractChannelHandlerDelegate {
         if (message instanceof Response) {
             decode(((Response) message).getResult());
         }
-
+        /**
+         * {@link HeaderExchangeHandler#received(com.alibaba.dubbo.remoting.Channel, java.lang.Object)}
+         */
         handler.received(channel, message);
     }
 

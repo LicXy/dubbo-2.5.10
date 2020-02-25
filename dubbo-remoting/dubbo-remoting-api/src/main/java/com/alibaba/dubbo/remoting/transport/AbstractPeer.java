@@ -133,6 +133,9 @@ public abstract class AbstractPeer implements Endpoint, ChannelHandler {
         if (closed) {
             return;
         }
+        /**
+         * {@link MultiMessageHandler#received(com.alibaba.dubbo.remoting.Channel, java.lang.Object)}
+         */
         handler.received(ch, msg);
     }
 
