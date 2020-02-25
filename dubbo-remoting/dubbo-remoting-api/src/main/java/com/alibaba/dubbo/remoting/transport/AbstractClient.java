@@ -279,6 +279,9 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         if (channel == null || !channel.isConnected()) {
             throw new RemotingException(this, "message can not send, because channel is closed . url:" + getUrl());
         }
+        /**
+         * {@link com.alibaba.dubbo.remoting.transport.netty.NettyChannel#send(java.lang.Object, boolean)}
+         */
         channel.send(message, sent);
     }
 

@@ -139,6 +139,9 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
 
 
         try {
+            /**
+             *
+             */
             return doInvoke(invocation);
         } catch (InvocationTargetException e) { // biz exception
             Throwable te = e.getTargetException();

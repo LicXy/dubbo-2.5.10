@@ -424,7 +424,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         if (logger.isInfoEnabled()) {
             logger.info("Refer dubbo service " + interfaceClass.getName() + " from url " + invoker.getUrl());
         }
-        // create service proxy
+        /**
+         * 创建服务代理
+         */
         return (T) proxyFactory.getProxy(invoker);
     }
 

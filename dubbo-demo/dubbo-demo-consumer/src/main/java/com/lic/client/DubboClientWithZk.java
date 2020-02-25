@@ -37,7 +37,6 @@ public class DubboClientWithZk {
         int count = 0;
         while (!(cmd = read()).equals("exit")) {
             System.out.println( userService.selectUser() );
-
         }
     }
 

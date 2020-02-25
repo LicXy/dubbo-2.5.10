@@ -49,6 +49,9 @@ public class InvokerWrapper<T> implements Invoker<T> {
     }
 
     public Result invoke(Invocation invocation) throws RpcException {
+        /**
+         *
+         */
         return invoker.invoke(invocation);
     }
 

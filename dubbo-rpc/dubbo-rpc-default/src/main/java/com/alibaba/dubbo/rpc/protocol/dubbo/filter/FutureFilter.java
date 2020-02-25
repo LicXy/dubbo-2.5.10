@@ -48,8 +48,11 @@ public class FutureFilter implements Filter {
         final boolean isAsync = RpcUtils.isAsync(invoker.getUrl(), invocation);
 
         fireInvokeCallback(invoker, invocation);
-        // need to configure if there's return value before the invocation in order to help invoker to judge if it's
-        // necessary to return future.
+
+        /**
+         *  need to configure if there's return value before the invocation in order to help invoker to judge if it's
+         *  necessary to return future.
+         */
         Result result = invoker.invoke(invocation);
         if (isAsync) {
             asyncCallback(invoker, invocation);

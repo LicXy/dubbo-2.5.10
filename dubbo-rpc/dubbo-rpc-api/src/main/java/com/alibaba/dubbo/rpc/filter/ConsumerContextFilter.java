@@ -44,6 +44,9 @@ public class ConsumerContextFilter implements Filter {
             ((RpcInvocation) invocation).setInvoker(invoker);
         }
         try {
+            /**
+             *
+             */
             return invoker.invoke(invocation);
         } finally {
             RpcContext.getContext().clearAttachments();
