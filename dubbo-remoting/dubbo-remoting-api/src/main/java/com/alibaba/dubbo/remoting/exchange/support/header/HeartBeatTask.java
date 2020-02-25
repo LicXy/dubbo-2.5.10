@@ -53,23 +53,31 @@ final class HeartBeatTask implements Runnable {
                             HeaderExchangeHandler.KEY_READ_TIMESTAMP);
                     Long lastWrite = (Long) channel.getAttribute(
                             HeaderExchangeHandler.KEY_WRITE_TIMESTAMP);
+                    //当前时间戳 减去 最后操作的时间戳大于心跳时间, 则发送心跳
                     if ((lastRead != null && now - lastRead > heartbeat)
                             || (lastWrite != null && now - lastWrite > heartbeat)) {
                         Request req = new Request();
                         req.setVersion("2.0.0");
                         req.setTwoWay(true);
                         req.setEvent(Request.HEARTBEAT_EVENT);
+                        /**
+                         * 发送心跳
+                         */
                         channel.send(req);
                         if (logger.isDebugEnabled()) {
                             logger.debug("Send heartbeat to remote channel " + channel.getRemoteAddress()
                                     + ", cause: The channel has no data-transmission exceeds a heartbeat period: " + heartbeat + "ms");
                         }
                     }
+                    //当前时间戳 减去 最后操作的时间戳不仅大于心跳时间, 还大于了心跳超时时间, 那么可以任务通道已经被关闭, 开始尝试重连
                     if (lastRead != null && now - lastRead > heartbeatTimeout) {
                         logger.warn("Close channel " + channel
                                 + ", because heartbeat read idle time out: " + heartbeatTimeout + "ms");
                         if (channel instanceof Client) {
                             try {
+                                /**
+                                 * 当连接超时, 执行此方法进行重连
+                                 */
                                 ((Client) channel).reconnect();
                             } catch (Exception e) {
                                 //do nothing

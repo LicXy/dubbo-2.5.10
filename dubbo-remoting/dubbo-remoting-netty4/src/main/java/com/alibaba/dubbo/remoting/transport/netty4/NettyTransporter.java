@@ -32,6 +32,7 @@ public class NettyTransporter implements Transporter {
     }
 
     public Client connect(URL url, ChannelHandler listener) throws RemotingException {
+        //创建Netty客户端
         return new NettyClient(url, listener);
     }
 

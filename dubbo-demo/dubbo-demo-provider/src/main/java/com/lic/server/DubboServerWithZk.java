@@ -31,7 +31,7 @@ public class DubboServerWithZk {
         /**
          * 使用multicast广播注册中心暴露服务地址
          */
-        serviceConfig.setRegistry(new RegistryConfig("zookeeper://192.168.2.100:2181"));
+        serviceConfig.setRegistry(new RegistryConfig("zookeeper://127.0.0.1:2181"));
 
         /**
          * 设置服务所在当前应用

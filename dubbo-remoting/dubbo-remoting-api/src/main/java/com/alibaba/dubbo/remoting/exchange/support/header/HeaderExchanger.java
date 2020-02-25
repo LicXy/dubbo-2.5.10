@@ -35,10 +35,19 @@ public class HeaderExchanger implements Exchanger {
     public static final String NAME = "header";
 
     public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
+        /**
+         * [客户端: 连接服务端]
+         * HeaderExchangeClient: 包装类, 用于封装客户端 (装饰者模式)
+         * Transporters.connect(..): 用于连接客户端   <==== 重点
+         * DecodeHandler: 解码处理器
+         */
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }
 
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
+        /**
+         * 服务端:绑定地址
+         */
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler))));
     }
 

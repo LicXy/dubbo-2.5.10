@@ -105,6 +105,9 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
         return new IZkChildListener() {
             public void handleChildChange(String parentPath, List<String> currentChilds)
                     throws Exception {
+                /**
+                 * 子节点变更事件
+                 */
                 listener.childChanged(parentPath, currentChilds);
             }
         };

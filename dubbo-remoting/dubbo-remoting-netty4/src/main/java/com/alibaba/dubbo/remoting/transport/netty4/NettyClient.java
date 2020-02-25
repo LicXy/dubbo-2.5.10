@@ -95,7 +95,7 @@ public class NettyClient extends AbstractClient {
             if (ret && future.isSuccess()) {
                 Channel newChannel = future.channel();
                 try {
-                    // Close old channel
+                    //关闭旧的通道
                     Channel oldChannel = NettyClient.this.channel; // copy reference
                     if (oldChannel != null) {
                         try {

@@ -16,7 +16,7 @@ public class DubboClientWithZk {
     public UserService buildRemoteService(String remoteUrl) {
         ReferenceConfig<UserService> referenceConfig = new ReferenceConfig();
         //设置注册中心, 从广播中接收信息
-        referenceConfig.setRegistry(new RegistryConfig("zookeeper://192.168.2.100:2181"));
+        referenceConfig.setRegistry(new RegistryConfig("zookeeper://127.0.0.1:2181"));
         referenceConfig.setApplication(new ApplicationConfig("client-app"));
         referenceConfig.setInterface(UserService.class);
         referenceConfig.setUrl(remoteUrl);

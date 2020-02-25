@@ -217,7 +217,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                 this.overrideDirectoryUrl = configurator.configure(overrideDirectoryUrl);
             }
         }
-        // providers
+        // providers刷新Invoker
         refreshInvoker(invokerUrls);
     }
 

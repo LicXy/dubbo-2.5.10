@@ -72,6 +72,11 @@ public class Transporters {
         } else {
             handler = new ChannelHandlerDispatcher(handlers);
         }
+        /**
+         * getTransporter(): 获取传输层实例 Mine/Netty
+         * connect(..): 根据不同的传输层协议进行连接
+         * Netty4:{@link com.alibaba.dubbo.remoting.transport.netty4.NettyTransporter#connect(URL, ChannelHandler){
+         */
         return getTransporter().connect(url, handler);
     }
 

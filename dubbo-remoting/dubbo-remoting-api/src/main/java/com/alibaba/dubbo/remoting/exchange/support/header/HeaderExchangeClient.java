@@ -66,6 +66,9 @@ public class HeaderExchangeClient implements ExchangeClient {
             throw new IllegalStateException("heartbeatTimeout < heartbeatInterval * 2");
         }
         if (needHeartbeat) {
+            /**
+             * 在创建一个连接客户端同时也会创建一个心跳客户端, 客户端默认基于60秒发送一次心跳来保持连接的存活
+             */
             startHeatbeatTimer();
         }
     }
@@ -122,7 +125,13 @@ public class HeaderExchangeClient implements ExchangeClient {
     public void close(int timeout) {
         // Mark the client into the closure process
         startClose();
+        /**
+         * 关闭心跳任务
+         */
         doClose();
+        /**
+         * 关闭通道
+         */
         channel.close(timeout);
     }
 
@@ -163,9 +172,13 @@ public class HeaderExchangeClient implements ExchangeClient {
     private void startHeatbeatTimer() {
         stopHeartbeatTimer();
         if (heartbeat > 0) {
+            /**
+             * 创建一个心跳定时线程任务, 向服务端发送心跳
+             */
             heartbeatTimer = scheduled.scheduleWithFixedDelay(
                     new HeartBeatTask(new HeartBeatTask.ChannelProvider() {
                         public Collection<Channel> getChannels() {
+                            //创建一个单实例集合用于存储当前的客户端连接
                             return Collections.<Channel>singletonList(HeaderExchangeClient.this);
                         }
                     }, heartbeat, heartbeatTimeout),

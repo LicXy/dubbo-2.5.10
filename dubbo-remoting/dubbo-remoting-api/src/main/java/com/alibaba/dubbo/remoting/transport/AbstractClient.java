@@ -77,6 +77,11 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         reconnect_warning_period = url.getParameter("reconnect.waring.period", 1800);
 
         try {
+            /**
+             * === Netty4:  ===
+             * 1. 创建客户端BootStrap以及相关通道配置
+             * === Netty4:  ===
+             */
             doOpen();
         } catch (Throwable t) {
             close();
@@ -85,7 +90,12 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
                             + " connect to the server " + getRemoteAddress() + ", cause: " + t.getMessage(), t);
         }
         try {
-            // connect.
+            /**
+             *
+             *  === Netty4:  ===
+             * 2. 连接服务端
+             * === Netty4:  ===
+             */
             connect();
             if (logger.isInfoEnabled()) {
                 logger.info("Start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() + " connect to the server " + getRemoteAddress());
@@ -148,10 +158,17 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         //reconnect=false to close reconnect
         int reconnect = getReconnectParam(getUrl());
         if (reconnect > 0 && (reconnectExecutorFuture == null || reconnectExecutorFuture.isCancelled())) {
+            /**
+             * 创建一个尝试连接任务线程, 不断的尝试连接服务端
+             */
             Runnable connectStatusCheckCommand = new Runnable() {
                 public void run() {
                     try {
                         if (!isConnected()) {
+                            /**
+                             * 在定时任务中执行connect()方法,
+                             * 去重新初始化reconnectExecutorFuture, 以及连接重连
+                             */
                             connect();
                         } else {
                             lastConnectedTime = System.currentTimeMillis();
@@ -172,6 +189,9 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
                     }
                 }
             };
+            /**
+             * 每隔2秒 尝试一次重连
+             */
             reconnectExecutorFuture = reconnectExecutorService.scheduleWithFixedDelay(connectStatusCheckCommand, reconnect, reconnect, TimeUnit.MILLISECONDS);
         }
     }
@@ -179,7 +199,13 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     private synchronized void destroyConnectStatusCheckCommand() {
         try {
             if (reconnectExecutorFuture != null && !reconnectExecutorFuture.isDone()) {
+                /**
+                 * 关闭重连任务, 定时任务取消,不再进行重连
+                 * bug: 满足上面的前提是reconnectExecutorFuture.cancel(true)执行时, 重连的定时任务线程并没有执行到connect()处
+                 * 否则, 由于zookeeper只会通知一次取消定时任务, 但是在connect()方法中又重新创建了一个定时任务, 这将会导致定时任务将不会再被取消, 客户端将一直进行重连
+                 */
                 reconnectExecutorFuture.cancel(true);
+                //清除线程的一些资源信息
                 reconnectExecutorService.purge();
             }
         } catch (Throwable e) {
@@ -262,7 +288,13 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
             if (isConnected()) {
                 return;
             }
+            /**
+             * 1. 初始化重连任务
+             */
             initConnectStatusCheckCommand();
+            /**
+             * 2.创建连接
+             */
             doConnect();
             if (!isConnected()) {
                 throw new RemotingException(this, "Failed connect to server " + getRemoteAddress() + " from " + getClass().getSimpleName() + " "
@@ -291,8 +323,14 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     public void disconnect() {
         connectLock.lock();
         try {
+            /**
+             * 关闭重连任务
+             */
             destroyConnectStatusCheckCommand();
             try {
+                /**
+                 * 关闭通道
+                 */
                 Channel channel = getChannel();
                 if (channel != null) {
                     channel.close();
@@ -311,7 +349,13 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     }
 
     public void reconnect() throws RemotingException {
+        /**
+         * 断开连接
+         */
         disconnect();
+        /**
+         * 尝试重新连接
+         */
         connect();
     }
 
